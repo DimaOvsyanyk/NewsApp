@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.dimaoprog.newsapiapp.utils.Converters" />
+
+        <variable
+            name="forecastDay"
+            type="com.dimaoprog.newsapiapp.models.Forecastday" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/shape"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <TextView
+            style="@style/TextWeatherForecast"
+            android:layout_gravity="center_horizontal"
+            android:text="@{forecastDay.date}"
+            tools:text="date" />
+
+        <ImageView
+            imageArticleUrl="@{Converters.toIconPath(forecastDay.day.condition.icon)}"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/weather_image" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="4dp"
+                android:text="@{forecastDay.day.condition.text}"
+                tools:text="sunny" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextWeather"
+                android:layout_marginEnd="4dp"
+                android:text="@{Converters.doubleToString(forecastDay.day.maxtempC)}"
+                tools:text="max" />
+
+            <TextView
+                style="@style/TextWeather"
+                android:text="C /" />
+
+            <TextView
+                style="@style/TextWeather"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="@{Converters.doubleToString(forecastDay.day.mintempC)}"
+                tools:text="min" />
+
+            <TextView
+                style="@style/TextWeather"
+                android:text="C" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:text="@string/wind" />
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="@{Converters.doubleToString(forecastDay.day.maxwindKph)}"
+                tools:text="wind" />
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:text="@string/km_hour" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="@{Converters.doubleToString(forecastDay.day.totalprecipMm)}"
+                tools:text="precipitation" />
+
+            <TextView
+                style="@style/TextWeatherForecast"
+                android:text="@string/mm" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

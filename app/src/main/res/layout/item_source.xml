@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="expand"
+            type="Boolean" />
+
+        <variable
+            name="source"
+            type="com.dimaoprog.newsapiapp.models.Source" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@{source.name}"
+                android:textSize="18sp"
+                tools:text="name" />
+
+            <FrameLayout
+                android:id="@+id/add_remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_to_favorites"
+                    android:visibility="@{source.isSelectedSource == 1 ? View.GONE : View.VISIBLE}"
+                    android:src="@drawable/ic_add_circle" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_to_favorites"
+                    android:visibility="@{source.isSelectedSource == 1 ? View.VISIBLE : View.GONE}"
+                    android:src="@drawable/ic_remove_circle" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{source.description}"
+            android:visibility="@{expand ? View.VISIBLE : View.GONE}"
+            tools:text="description" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="@{source.category}"
+            tools:text="category" />
+
+    </LinearLayout>
+</layout>

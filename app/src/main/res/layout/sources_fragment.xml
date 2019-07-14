@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="sourceModel"
+            type="com.dimaoprog.newsapiapp.view.sources.SourcesViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.sources.SourcesFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_sources"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <ProgressBar
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:visibility="@{sourceModel.processing ? View.VISIBLE : View.GONE}" />
+
+    </FrameLayout>
+</layout>

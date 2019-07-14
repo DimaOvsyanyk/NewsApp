@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="profileModel"
+            type="com.dimaoprog.newsapiapp.view.profile.ProfileViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="30dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_old_password"
+                        style="@style/TextInput"
+                        android:autofillHints="@string/old_password"
+                        android:hint="@string/old_password"
+                        android:inputType="textPassword"
+                        android:text="@={profileModel.oldPassword}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_new_password"
+                        style="@style/TextInput"
+                        android:autofillHints="@string/new_password"
+                        android:hint="@string/new_password"
+                        android:inputType="textPassword"
+                        android:text="@={profileModel.newPassword}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_first_name"
+                        style="@style/TextInput"
+                        android:autofillHints="@string/first_name"
+                        android:hint="@string/first_name"
+                        android:inputType="textPersonName"
+                        android:maxLength="30"
+                        android:text="@={profileModel.firstName}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_second_name"
+                        style="@style/TextInput"
+                        android:autofillHints="@string/second_name"
+                        android:hint="@string/second_name"
+                        android:inputType="textPersonName"
+                        android:maxLength="30"
+                        android:text="@={profileModel.secondName}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_tel_number"
+                        style="@style/TextInput"
+                        android:autofillHints="@string/telephone_number"
+                        android:hint="@string/telephone_number"
+                        android:inputType="phone"
+                        android:maxLength="13"
+                        android:text="@={profileModel.telNumber}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/country_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:spinnerMode="dialog" />
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/city_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:spinnerMode="dialog" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:onClick="@{() -> profileModel.saveChanges()}"
+                    android:text="@string/save_changes" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:visibility="@{profileModel.processing ? View.VISIBLE : View.GONE}" />
+        </FrameLayout>
+    </ScrollView>
+</layout>

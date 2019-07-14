@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="com.dimaoprog.newsapiapp.utils.Converters" />
+
+        <variable
+            name="weatherModel"
+            type="com.dimaoprog.newsapiapp.view.weather.WeatherViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                tools:context=".view.weather.WeatherFragment">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_forecast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@{weatherModel.location.name}"
+                            tools:text="city" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:text="@{weatherModel.location.region}"
+                            tools:text="region" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:text="@{weatherModel.location.country}"
+                            tools:text="country" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/last_updated" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:text="@{weatherModel.currentWeather.lastUpdated}"
+                            tools:text="date" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            imageArticleUrl="@{Converters.toIconPath(weatherModel.currentWeather.condition.icon)}"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center_horizontal"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/weather_image" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@{weatherModel.currentWeather.condition.text}"
+                            tools:text="sunny" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/temperature" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.tempC)}"
+                            tools:text="temperature" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="C" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/feels_like" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.feelslikeC)}"
+                            tools:text="feels like" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="C" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/wind_speed" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.windKph)}"
+                            tools:text="wind speed" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/km_hour" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/wind_direction" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.feelslikeC)}"
+                            tools:text="wind dir" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/pressure" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.pressureMb)}"
+                            tools:text="pressure mb" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="mb" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/humidity" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.intToString(weatherModel.currentWeather.humidity)}"
+                            tools:text="humidity" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="%" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/visibility" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.visKm)}"
+                            tools:text="visibility" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/km" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/precipitation" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@{Converters.doubleToString(weatherModel.currentWeather.precipMm)}"
+                            tools:text="precipitation" />
+
+                        <TextView
+                            style="@style/TextWeather"
+                            android:text="@string/mm" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background"
+                android:visibility="@{weatherModel.processing ? View.VISIBLE : View.GONE}">
+
+                <ProgressBar
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+        </FrameLayout>
+    </ScrollView>
+</layout>

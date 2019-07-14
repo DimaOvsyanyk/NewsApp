@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="loginModel"
+            type="com.dimaoprog.newsapiapp.view.loginRegistration.LoginViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.LoginFragment">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="30dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:background="@drawable/shape"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_e_mail"
+                        style="@style/TextInputLogin"
+                        android:autofillHints="@string/e_mail"
+                        android:hint="@string/e_mail"
+                        android:inputType="textEmailAddress"
+                        android:text="@={loginModel.email}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/colorAccent"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_password"
+                        style="@style/TextInputLogin"
+                        android:autofillHints="@string/password"
+                        android:hint="@string/password"
+                        android:inputType="textPassword"
+                        android:text="@={loginModel.password}"
+                        tools:targetApi="o" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        style="@android:style/Widget.Material.Button.Borderless.Colored"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        android:layout_weight="1"
+                        android:onClick="@{() -> loginModel.signIn()}"
+                        android:text="@string/sign_in" />
+
+                    <Button
+                        android:id="@+id/btn_registration"
+                        style="@android:style/Widget.Material.Button.Borderless.Colored"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        android:layout_weight="1"
+                        android:text="@string/registration" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:visibility="@{loginModel.processing ? View.VISIBLE : View.GONE}" />
+        </FrameLayout>
+    </ScrollView>
+</layout>
