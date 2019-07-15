@@ -3,6 +3,7 @@ package com.dimaoprog.newsapiapp.utils;
 public class Constants {
 
     public static final int TRIAL_LIMIT = 5;
+    public static final int DAYS_INTERVAL_SOURCES_UPDATE = 7;
 
     public static final String API_KEY_NEWS = "Authorization: e9d9998ed8db48bfbdf26c2c2a4cc7bd";
     public static final String API_KEY_WEATHER = "d302f5934bd04035a09114520191307";

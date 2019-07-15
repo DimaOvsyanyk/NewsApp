@@ -14,8 +14,15 @@ import com.dimaoprog.newsapiapp.models.Source;
 
 public class SourcesAdapter extends ListAdapter<Source, SourcesVH> {
 
-    protected SourcesAdapter() {
+    private IAddRemoveSourceListener addRemoveSourceListener;
+
+    public interface IAddRemoveSourceListener {
+        void changeIsSourceSelected(Source source);
+    }
+
+    protected SourcesAdapter(IAddRemoveSourceListener addRemoveSourceListener) {
         super(DIFF_CALLBACK);
+        this.addRemoveSourceListener = addRemoveSourceListener;
     }
 
     private static final DiffUtil.ItemCallback<Source> DIFF_CALLBACK = new DiffUtil.ItemCallback<Source>() {
@@ -39,6 +46,6 @@ public class SourcesAdapter extends ListAdapter<Source, SourcesVH> {
 
     @Override
     public void onBindViewHolder(@NonNull SourcesVH holder, int position) {
-        holder.onBind(getItem(position));
+        holder.onBind(getItem(position), addRemoveSourceListener);
     }
 }

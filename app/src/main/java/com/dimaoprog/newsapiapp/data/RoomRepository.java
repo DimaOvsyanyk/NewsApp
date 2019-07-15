@@ -2,23 +2,20 @@ package com.dimaoprog.newsapiapp.data;
 
 import android.app.Application;
 
-import androidx.lifecycle.MutableLiveData;
-
+import androidx.lifecycle.LiveData;
 import com.dimaoprog.newsapiapp.models.Source;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
+import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.dimaoprog.newsapiapp.models.Source.SELECTED;
 
 public class RoomRepository {
 
     private static SourceDao sourceDao;
-    private MutableLiveData<List<Source>> sourceList = new MutableLiveData<>();
     private Executor executor = Executors.newFixedThreadPool(5);
 
     private static RoomRepository instance;
@@ -32,42 +29,43 @@ public class RoomRepository {
         return instance;
     }
 
-    public MutableLiveData<List<Source>> getSourceList() {
-        sourceDao.getAllSources()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setSourceList);
-        return sourceList;
+    public LiveData<List<Source>> getSourceList() {
+        return sourceDao.getAllSources();
     }
 
-    public Single<String> getSelectedSources() {
+    public Single<List<Source>> getSelectedSources() {
+        return sourceDao.getSelectedSources(SELECTED);
+    }
+
+    public Single<String> getSelectedSourcesString() {
         return sourceDao.getSelectedSources(SELECTED)
                 .map(sourceList -> {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(sourceList.get(0).getId());
-                    if (sourceList.size() > 1) {
-                        for (int i = 1; i < sourceList.size(); i++) {
+                    int i = 0;
+                    for (Source source : sourceList) {
+                        if (i > 0) {
                             sb.append(",");
-                            sb.append(sourceList.get(i));
                         }
+                        sb.append(source.getId());
+                        i++;
                     }
                     return sb.toString();
                 });
-    }
-
-    public void setSourceList(List<Source> sourceList) {
-        this.sourceList.setValue(sourceList);
     }
 
     public void insert(List<Source> sourceList) {
         executor.execute(() -> sourceDao.insert(sourceList));
     }
 
-    public void update(Source source) {
-        executor.execute(() -> sourceDao.update(source));
+    public Observable<Integer> update(Source source) {
+        return Observable.fromCallable(() -> sourceDao.update(source));
     }
 
     public void delete(Source source) {
         executor.execute(() -> sourceDao.delete(source));
     }
 
+    public void clearSources() {
+        executor.execute(() -> sourceDao.clearSources());
+    }
 }

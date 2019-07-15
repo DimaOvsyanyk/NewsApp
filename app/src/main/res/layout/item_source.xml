@@ -35,27 +35,31 @@
                 android:layout_weight="1"
                 android:text="@{source.name}"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 tools:text="name" />
 
             <FrameLayout
                 android:id="@+id/add_remove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp">
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/add_to_favorites"
-                    android:visibility="@{source.isSelectedSource == 1 ? View.GONE : View.VISIBLE}"
-                    android:src="@drawable/ic_add_circle" />
+                    android:src="@drawable/ic_add"
+                    android:visibility="@{source.isSelectedSource == 1 ? View.GONE : View.VISIBLE}" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/add_to_favorites"
-                    android:visibility="@{source.isSelectedSource == 1 ? View.VISIBLE : View.GONE}"
-                    android:src="@drawable/ic_remove_circle" />
+                    android:src="@drawable/ic_remove"
+                    android:visibility="@{source.isSelectedSource == 1 ? View.VISIBLE : View.GONE}" />
 
             </FrameLayout>
 

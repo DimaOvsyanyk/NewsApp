@@ -6,16 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-
-import android.util.Log;
 import android.view.MenuItem;
-
-import com.dimaoprog.newsapiapp.dagger.DaggerAppComponent;
-import com.dimaoprog.newsapiapp.data.INewsApi;
-import com.dimaoprog.newsapiapp.data.PrefsRepository;
-import com.dimaoprog.newsapiapp.data.RoomRepository;
-import com.dimaoprog.newsapiapp.models.Source;
-import com.dimaoprog.newsapiapp.models.SourcesResponse;
 import com.dimaoprog.newsapiapp.utils.ChangeFragmentsListener;
 import com.dimaoprog.newsapiapp.view.loginRegistration.LoginFragment;
 import com.dimaoprog.newsapiapp.view.news.NewsFragment;
@@ -30,29 +21,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
-import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Response;
-
-import static com.dimaoprog.newsapiapp.models.Source.SELECTED;
-import static com.dimaoprog.newsapiapp.models.Source.UNSELECTED;
+import androidx.lifecycle.ViewModelProviders;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ChangeFragmentsListener {
 
+    private MainViewModel mainViewModel;
     private FirebaseAuth auth;
     private DrawerLayout drawer;
-    private PrefsRepository prefsRepository;
-    private CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawer = findViewById(R.id.drawer_layout);
@@ -63,10 +45,6 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        prefsRepository = PrefsRepository.getInstance(getApplicationContext());
-        if (prefsRepository.needFirstTimeLoading()) {
-            loadSourcesFirstTime();
-        }
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
 
@@ -80,54 +58,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void loadSourcesFirstTime() {
-        INewsApi newsApi = DaggerAppComponent.create().getNewsApi();
-        disposable.add(newsApi.getSources()
-                .map(Response::body)
-                .map(SourcesResponse::getSources)
-                .map(this::makeSomeSourcesSelected)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::workWithFirstLoadedSources,
-                        onError -> Log.d("api response", onError.getMessage())
-                ));
-    }
-
-    private void workWithFirstLoadedSources(List<Source> sourceList) {
-        RoomRepository roomRepository = RoomRepository.getInstance(getApplication());
-        roomRepository.insert(sourceList);
-        prefsRepository.firstTimeLoaded();
-        prefsRepository.setNewTimeSourceUpdate();
-        prefsRepository.setSelectedSourceList(convertListToString(sourceList));
-    }
-
-    private String convertListToString(List<Source> sourceList) {
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        for (Source source : sourceList) {
-            if (source.getIsSelectedSource() == SELECTED) {
-                if (i > 0) {
-                    sb.append(",");
-                }
-                sb.append(source.getId());
-                i++;
-            }
-        }
-        Log.d("main", sb.toString() + " " + i);
-        return sb.toString();
-    }
-
-    private List<Source> makeSomeSourcesSelected(List<Source> sourceList) {
-        for (int i = 0; i < sourceList.size(); i++) {
-            if (i < 4) {
-                sourceList.get(i).setIsSelectedSource(SELECTED);
-            } else {
-                sourceList.get(i).setIsSelectedSource(UNSELECTED);
-            }
-        }
-        return sourceList;
-    }
-
     @Override
     public void openFragment(Fragment fragment, boolean addToBackStack, boolean clearBackStack) {
         checkDrawerLockMode();
@@ -136,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         }
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.fr_container, fragment);
         if (addToBackStack) {
             transaction.addToBackStack(null);
@@ -171,26 +101,18 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_news) {
-            openFragment(NewsFragment.newInstance(this), true, true);
+            openFragment(NewsFragment.newInstance(this), false, true);
         } else if (id == R.id.nav_sources) {
-            openFragment(new SourcesFragment(), true, true);
+            openFragment(new SourcesFragment(), false, true);
         } else if (id == R.id.nav_weather) {
-            openFragment(new WeatherFragment(), true, true);
+            openFragment(new WeatherFragment(), false, true);
         } else if (id == R.id.nav_profile) {
-            openFragment(new ProfileFragment(), true, true);
+            openFragment(new ProfileFragment(), false, true);
         } else if (id == R.id.nav_exit) {
             auth.signOut();
             openFragment(LoginFragment.newInstance(this), false, true);
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.clear();
-        }
     }
 }

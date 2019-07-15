@@ -35,11 +35,6 @@ public class Converters {
         }
     }
 
-    public static int dateToDayInt(Date date) {
-
-        return date == null ? null : Integer.valueOf(new SimpleDateFormat("dd", Locale.getDefault()).format(date));
-    }
-
     public static String toIconPath(String path) {
         return "http:" + path;
     }

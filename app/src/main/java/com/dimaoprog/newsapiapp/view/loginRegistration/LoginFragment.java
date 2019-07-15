@@ -48,12 +48,18 @@ public class LoginFragment extends Fragment {
     }
 
     private void observeLiveData() {
-        lViewModel.getToastMessage().observe(getViewLifecycleOwner(), text -> Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show());
+        lViewModel.getToastMessage().observe(getViewLifecycleOwner(), text -> {
+            if (text != null) {
+                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+                lViewModel.setToastMessage(null);
+            }
+        });
         lViewModel.getEmailOk().observe(getViewLifecycleOwner(), ok -> binding.etEMail.setError(ok ? null : getString(R.string.invalid_email)));
         lViewModel.getPasswordOk().observe(getViewLifecycleOwner(), ok -> binding.etPassword.setError(ok ? null : getString(R.string.invalid_pass)));
         lViewModel.getSignInCompleted().observe(getViewLifecycleOwner(), completed -> {
-            if(completed) {
+            if (completed) {
                 changeFrListener.openFragment(NewsFragment.newInstance(changeFrListener), true, true);
+                lViewModel.setSignInCompleted(false);
             }
         });
     }

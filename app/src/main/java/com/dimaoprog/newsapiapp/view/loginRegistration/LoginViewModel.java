@@ -47,6 +47,7 @@ public class LoginViewModel extends AndroidViewModel {
                 .addOnSuccessListener(authResult -> {
                     if (authResult.getUser().isEmailVerified()) {
                         checkSelectedResourcesCity();
+                        auth.updateCurrentUser(authResult.getUser());
                         setSignInCompleted(true);
                     } else {
                         setToastMessage("Please verify your e-mail");

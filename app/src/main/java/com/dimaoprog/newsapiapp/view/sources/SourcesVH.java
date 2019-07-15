@@ -20,7 +20,7 @@ public class SourcesVH extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void onBind(Source source) {
+    public void onBind(Source source, SourcesAdapter.IAddRemoveSourceListener addRemoveSourceListener) {
         binding.setExpand(false);
         binding.setSource(source);
         itemView.setOnClickListener(__ -> binding.setExpand(!binding.getExpand()));
@@ -31,6 +31,7 @@ public class SourcesVH extends RecyclerView.ViewHolder {
                 source.setIsSelectedSource(SELECTED);
             }
             binding.invalidateAll();
+            addRemoveSourceListener.changeIsSourceSelected(source);
             Log.d("view holder", source.getName() + " " + source.getIsSelectedSource());
         });
     }

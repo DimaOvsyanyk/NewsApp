@@ -15,8 +15,9 @@ import android.view.ViewGroup;
 
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.SourcesFragmentBinding;
+import com.dimaoprog.newsapiapp.models.Source;
 
-public class SourcesFragment extends Fragment {
+public class SourcesFragment extends Fragment implements SourcesAdapter.IAddRemoveSourceListener {
 
     private SourcesViewModel sViewModel;
 
@@ -26,7 +27,7 @@ public class SourcesFragment extends Fragment {
         sViewModel = ViewModelProviders.of(this).get(SourcesViewModel.class);
         SourcesFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.sources_fragment, container, false);
         binding.setSourceModel(sViewModel);
-        SourcesAdapter adapter = new SourcesAdapter();
+        SourcesAdapter adapter = new SourcesAdapter(this);
         binding.rvSources.setAdapter(adapter);
 
         sViewModel.getSources().observe(getViewLifecycleOwner(), adapter::submitList);
@@ -34,4 +35,8 @@ public class SourcesFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void changeIsSourceSelected(Source source) {
+        sViewModel.makeChangesInSources(source);
+    }
 }

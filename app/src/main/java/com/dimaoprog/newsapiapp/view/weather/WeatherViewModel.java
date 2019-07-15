@@ -8,10 +8,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
-import com.dimaoprog.newsapiapp.dagger.AppComponent;
-import com.dimaoprog.newsapiapp.dagger.DaggerAppComponent;
+import com.dimaoprog.newsapiapp.data.NetworkRepository;
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.models.CurrentWeather;
 import com.dimaoprog.newsapiapp.models.Forecastday;
@@ -24,12 +21,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
-import static com.dimaoprog.newsapiapp.utils.Constants.API_KEY_WEATHER;
-
 public class WeatherViewModel extends AndroidViewModel {
 
-    private AppComponent component;
     private PrefsRepository prefsRepository;
+    private NetworkRepository netRepository;
     private ObservableBoolean processing = new ObservableBoolean();
     private CompositeDisposable disposable = new CompositeDisposable();
     private ObservableField<CurrentWeather> currentWeather = new ObservableField<>();
@@ -38,14 +33,14 @@ public class WeatherViewModel extends AndroidViewModel {
 
     public WeatherViewModel(@NonNull Application application) {
         super(application);
-        component = DaggerAppComponent.create();
         prefsRepository = PrefsRepository.getInstance(application);
+        netRepository = NetworkRepository.getInstance();
         loadWeather();
     }
 
     private void loadWeather() {
         setProcessing(true);
-        disposable.add(component.getWeatherApi().getWeather(getCorrectCity(), API_KEY_WEATHER, 10)
+        disposable.add(netRepository.getWeather(getCorrectCity(), 10)
                 .map(Response::body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -65,11 +60,11 @@ public class WeatherViewModel extends AndroidViewModel {
     private String getCorrectCity() {
         String userCity = prefsRepository.getUserCity();
         switch (userCity) {
-            case "kyiv":
+            case "Kyiv":
                 return "kiev";
-            case "dnipro":
+            case "Dnipro":
                 return "dnipropetrovsk";
-            case "krakow":
+            case "Krakow":
                 return "krakov";
             default:
                 return userCity;

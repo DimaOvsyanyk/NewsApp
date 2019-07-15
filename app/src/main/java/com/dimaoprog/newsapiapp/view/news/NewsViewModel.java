@@ -8,8 +8,7 @@ import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.dimaoprog.newsapiapp.dagger.AppComponent;
-import com.dimaoprog.newsapiapp.dagger.DaggerAppComponent;
+import com.dimaoprog.newsapiapp.data.NetworkRepository;
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.models.Article;
 
@@ -26,8 +25,8 @@ import static com.dimaoprog.newsapiapp.utils.Constants.TRIAL_LIMIT;
 
 public class NewsViewModel extends AndroidViewModel {
 
-    private AppComponent component;
     private PrefsRepository prefsRepository;
+    private NetworkRepository netRepository;
     private ObservableBoolean processing = new ObservableBoolean();
     private CompositeDisposable disposable = new CompositeDisposable();
 
@@ -39,12 +38,12 @@ public class NewsViewModel extends AndroidViewModel {
 
     public NewsViewModel(@NonNull Application application) {
         super(application);
-        component = DaggerAppComponent.create();
+        netRepository = NetworkRepository.getInstance();
         prefsRepository = PrefsRepository.getInstance(application);
         loadFirstPage();
     }
 
-    private void loadFirstPage() {
+    public void loadFirstPage() {
         firstLoading = true;
         page = 1;
         loadArticles();
@@ -59,7 +58,7 @@ public class NewsViewModel extends AndroidViewModel {
 
     private void loadArticles() {
         setProcessing(true);
-        disposable.add(component.getNewsApi().getNews(prefsRepository.getSelectedSourceList(), page)
+        disposable.add(netRepository.getNews(prefsRepository.getSelectedSourceList(), page)
                 .map(Response::body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

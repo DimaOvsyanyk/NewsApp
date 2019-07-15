@@ -11,7 +11,7 @@ public interface IWeatherApi {
 
     @GET("forecast.json")
     Single<Response<WeatherResponse>> getWeather(@Query("q") String city,
-                                                 @Query("key") String apiKey,
-                                                 @Query("days") int days);
+                                                 @Query("days") int days,
+                                                 @Query("key") String apiKey);
 
 }

@@ -47,8 +47,11 @@ public class NewsFragment extends Fragment {
         nViewModel.getNews().observe(getViewLifecycleOwner(), news -> {
             adapter.submitList(news);
             Log.d("api response", "size " + news.size());
-            adapter.notifyDataSetChanged();
+            adapter.notifyItemInserted(binding.rvNews.getLayoutManager().getItemCount() + 1);
+            binding.swipeRefresh.setRefreshing(false);
         });
+        binding.swipeRefresh.setOnRefreshListener(() -> nViewModel.loadFirstPage());
+        binding.fabUp.setOnClickListener(__ -> binding.rvNews.scrollToPosition(0));
         return binding.getRoot();
     }
 

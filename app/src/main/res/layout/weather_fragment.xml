@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -21,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -45,7 +46,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:gravity="end"
+                        android:orientation="vertical">
 
                         <TextView
                             style="@style/TextWeather"
@@ -54,13 +56,11 @@
 
                         <TextView
                             style="@style/TextWeather"
-                            android:layout_marginStart="4dp"
                             android:text="@{weatherModel.location.region}"
                             tools:text="region" />
 
                         <TextView
                             style="@style/TextWeather"
-                            android:layout_marginStart="4dp"
                             android:text="@{weatherModel.location.country}"
                             tools:text="country" />
 
@@ -283,7 +283,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/background"
-                android:visibility="@{weatherModel.processing ? View.VISIBLE : View.GONE}">
+                android:visibility="@{weatherModel.processing ? View.VISIBLE : View.GONE}"
+                tools:visibility="gone">
 
                 <ProgressBar
                     android:layout_width="100dp"

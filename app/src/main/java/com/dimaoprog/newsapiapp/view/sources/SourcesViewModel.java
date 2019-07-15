@@ -1,71 +1,83 @@
 package com.dimaoprog.newsapiapp.view.sources;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
-import com.dimaoprog.newsapiapp.dagger.AppComponent;
-import com.dimaoprog.newsapiapp.dagger.DaggerAppComponent;
+import androidx.lifecycle.LiveData;
+import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.data.RoomRepository;
 import com.dimaoprog.newsapiapp.models.Source;
-import com.dimaoprog.newsapiapp.models.SourcesResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Response;
+
+import static com.dimaoprog.newsapiapp.utils.Constants.COLLECTION_NAME;
 
 public class SourcesViewModel extends AndroidViewModel {
 
+    private RoomRepository roomRepository;
+    private PrefsRepository prefsRepository;
     private ObservableBoolean processing = new ObservableBoolean();
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    private MutableLiveData<List<Source>> sources;
+    private LiveData<List<Source>> sources;
+
+    private FirebaseUser currentUser;
+    private FirebaseFirestore db;
 
     public SourcesViewModel(@NonNull Application application) {
         super(application);
-        //    private AppComponent component;
-        RoomRepository roomRepository = RoomRepository.getInstance(application);
+        prefsRepository = PrefsRepository.getInstance(application);
+        roomRepository = RoomRepository.getInstance(application);
         sources = roomRepository.getSourceList();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
 
-//        component = DaggerAppComponent.create();
-//        loadSources();
     }
 
-//    private void loadSources() {
-//        disposable.add(component.getNewsApi().getSources()
-//                .map(Response::body)
-//                .map(SourcesResponse::getSources)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(sources1 -> {
-//                    setSources(sources1);
-//                            Log.d("api response", " " + sources1.size());
-//                        },
-//                        onError -> Log.d("api response", onError.getMessage())
-//                ));
-//    }
+    public void makeChangesInSources(Source source) {
+        disposable.add(roomRepository.update(source)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(t -> changePrefsAndFirebase(),
+                        onError -> Log.d("room response", onError.getMessage())
+                ));
 
-//    @Override
-//    protected void onCleared() {
-//        super.onCleared();
-//        disposable.clear();
-//    }
+    }
 
-    public MutableLiveData<List<Source>> getSources() {
+    private void changePrefsAndFirebase() {
+        disposable.add(roomRepository.getSelectedSourcesString()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(sourceListString -> {
+                            prefsRepository.setSelectedSourceList(sourceListString);
+                            db.collection(COLLECTION_NAME).document(currentUser.getUid()).update("selectedSources", sourceListString);
+                        },
+                        onError -> Log.d("room response", onError.getMessage())
+                ));
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.clear();
+    }
+
+    public LiveData<List<Source>> getSources() {
         return sources;
     }
 
-    public void setSources(List<Source> sources) {
-        this.sources.setValue(sources);
+    public void setSources(LiveData<List<Source>> sources) {
+        this.sources = sources;
     }
 
     public ObservableBoolean getProcessing() {
