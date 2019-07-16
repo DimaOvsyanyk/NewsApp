@@ -3,11 +3,15 @@ package com.dimaoprog.newsapiapp.data;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+
 import com.dimaoprog.newsapiapp.models.Source;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -18,15 +22,9 @@ public class RoomRepository {
     private static SourceDao sourceDao;
     private Executor executor = Executors.newFixedThreadPool(5);
 
-    private static RoomRepository instance;
-
-    public static RoomRepository getInstance(Application application) {
-        if (instance == null) {
-            instance = new RoomRepository();
-            AppDatabase database = AppDatabase.getInstance(application);
-            sourceDao = database.sourceDao();
-        }
-        return instance;
+    @Inject
+    public RoomRepository(AppDatabase database) {
+        sourceDao = database.sourceDao();
     }
 
     public LiveData<List<Source>> getSourceList() {

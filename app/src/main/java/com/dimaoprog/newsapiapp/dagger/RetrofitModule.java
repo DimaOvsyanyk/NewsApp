@@ -4,6 +4,9 @@ import com.dimaoprog.newsapiapp.data.INewsApi;
 import com.dimaoprog.newsapiapp.data.IWeatherApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Interceptor;
@@ -32,7 +35,7 @@ public class RetrofitModule {
     }
 
     @Provides
-    public IWeatherApi BASE_URL_WEATHER(Gson gson, OkHttpClient okHttpClient) {
+    public IWeatherApi getWeatherApi(Gson gson, OkHttpClient okHttpClient) {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL_WEATHER)
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -43,6 +46,7 @@ public class RetrofitModule {
     }
 
     @Provides
+    @Singleton
     public Gson getGson() {
         return new GsonBuilder()
                 .setLenient()
@@ -50,6 +54,7 @@ public class RetrofitModule {
     }
 
     @Provides
+    @Singleton
     public OkHttpClient getOkHttpClient(HttpLoggingInterceptor interceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
@@ -57,6 +62,7 @@ public class RetrofitModule {
     }
 
     @Provides
+    @Singleton
     public HttpLoggingInterceptor getInterceptor() {
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

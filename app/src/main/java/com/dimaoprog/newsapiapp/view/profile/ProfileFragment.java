@@ -16,10 +16,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.dimaoprog.newsapiapp.NewsApp;
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.ProfileFragmentBinding;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
+
+import javax.inject.Inject;
 
 public class ProfileFragment extends Fragment {
+
+    @Inject
+    ViewModelFactory vmFactory;
 
     private ProfileViewModel pViewModel;
     private ProfileFragmentBinding binding;
@@ -27,7 +34,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        pViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+        NewsApp.getApp().getAppComponent().inject(this);
+        pViewModel = ViewModelProviders.of(this, vmFactory).get(ProfileViewModel.class);
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
         binding.setProfileModel(pViewModel);
         observeLiveData();

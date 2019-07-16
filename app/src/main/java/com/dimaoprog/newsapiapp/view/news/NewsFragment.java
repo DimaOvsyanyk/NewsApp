@@ -16,11 +16,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dimaoprog.newsapiapp.NewsApp;
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.NewsFragmentBinding;
 import com.dimaoprog.newsapiapp.utils.ChangeFragmentsListener;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
+
+import javax.inject.Inject;
 
 public class NewsFragment extends Fragment {
+
+    @Inject
+    ViewModelFactory vmFactory;
 
     private NewsViewModel nViewModel;
     private NewsFragmentBinding binding;
@@ -41,7 +48,8 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        nViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
+        NewsApp.getApp().getAppComponent().inject(this);
+        nViewModel = ViewModelProviders.of(this, vmFactory).get(NewsViewModel.class);
         binding = DataBindingUtil.inflate(inflater, R.layout.news_fragment, container, false);
         setUpRV();
         nViewModel.getNews().observe(getViewLifecycleOwner(), news -> {

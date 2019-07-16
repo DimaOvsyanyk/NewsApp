@@ -16,12 +16,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.dimaoprog.newsapiapp.NewsApp;
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.RegistrationFragmentBinding;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 public class RegistrationFragment extends Fragment {
+
+    @Inject
+    ViewModelFactory vmFactory;
 
     private RegistrationViewModel rViewModel;
     private RegistrationFragmentBinding binding;
@@ -29,7 +36,8 @@ public class RegistrationFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        rViewModel = ViewModelProviders.of(this).get(RegistrationViewModel.class);
+        NewsApp.getApp().getAppComponent().inject(this);
+        rViewModel = ViewModelProviders.of(this, vmFactory).get(RegistrationViewModel.class);
         binding = DataBindingUtil.inflate(inflater, R.layout.registration_fragment, container, false);
         binding.setRegistrationModel(rViewModel);
         setUpCountrySpinner();

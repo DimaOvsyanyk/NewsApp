@@ -1,18 +1,18 @@
 package com.dimaoprog.newsapiapp.view.news;
 
-import android.app.Application;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.dimaoprog.newsapiapp.data.NetworkRepository;
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.models.Article;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -23,7 +23,7 @@ import static com.dimaoprog.newsapiapp.utils.Constants.RESPONSE_ERROR;
 import static com.dimaoprog.newsapiapp.utils.Constants.RESPONSE_OK;
 import static com.dimaoprog.newsapiapp.utils.Constants.TRIAL_LIMIT;
 
-public class NewsViewModel extends AndroidViewModel {
+public class NewsViewModel extends ViewModel {
 
     private PrefsRepository prefsRepository;
     private NetworkRepository netRepository;
@@ -36,10 +36,10 @@ public class NewsViewModel extends AndroidViewModel {
     private boolean firstLoading;
     private boolean hasNextPage;
 
-    public NewsViewModel(@NonNull Application application) {
-        super(application);
-        netRepository = NetworkRepository.getInstance();
-        prefsRepository = PrefsRepository.getInstance(application);
+    @Inject
+    public NewsViewModel(PrefsRepository prefsRepository, NetworkRepository netRepository) {
+        this.netRepository = netRepository;
+        this.prefsRepository = prefsRepository;
         loadFirstPage();
     }
 

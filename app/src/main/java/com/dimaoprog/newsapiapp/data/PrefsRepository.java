@@ -1,7 +1,10 @@
 package com.dimaoprog.newsapiapp.data;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import javax.inject.Inject;
 
 public class PrefsRepository {
 
@@ -11,15 +14,11 @@ public class PrefsRepository {
     private static final String SELECTED_SOURCE_LIST = "selectedSourceList";
     private static final String USER_CITY = "userCity";
 
-    private static SharedPreferences sharedPrefs;
-    private static PrefsRepository instance;
+    private SharedPreferences sharedPrefs;
 
-    public static PrefsRepository getInstance(Context context) {
-        if (instance == null) {
-            instance = new PrefsRepository();
-            sharedPrefs = context.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
-        }
-        return instance;
+    @Inject
+    public PrefsRepository(Application application) {
+        sharedPrefs = application.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
     }
 
     public boolean needFirstTimeLoading() {

@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
 
 import com.dimaoprog.newsapiapp.data.NetworkRepository;
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
@@ -15,6 +16,8 @@ import com.dimaoprog.newsapiapp.models.SourcesResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -24,7 +27,7 @@ import static com.dimaoprog.newsapiapp.models.Source.SELECTED;
 import static com.dimaoprog.newsapiapp.models.Source.UNSELECTED;
 import static com.dimaoprog.newsapiapp.utils.Constants.DAYS_INTERVAL_SOURCES_UPDATE;
 
-public class MainViewModel extends AndroidViewModel {
+public class MainViewModel extends ViewModel {
 
     private NetworkRepository netRepository;
     private PrefsRepository prefsRepository;
@@ -33,13 +36,13 @@ public class MainViewModel extends AndroidViewModel {
     private List<Source> currentSourceList = new ArrayList<>();
     private boolean isFirstLoading;
 
-    public MainViewModel(@NonNull Application application) {
-        super(application);
-        prefsRepository = PrefsRepository.getInstance(application);
-        isFirstLoading = prefsRepository.needFirstTimeLoading();
+    @Inject
+    public MainViewModel(NetworkRepository netRepository, PrefsRepository prefsRepository, RoomRepository roomRepository) {
+        this.prefsRepository = prefsRepository;
+        this.netRepository = netRepository;
+        this.roomRepository = roomRepository;
+        isFirstLoading = this.prefsRepository.needFirstTimeLoading();
         if (isFirstLoading || checkNeedRefreshSourceList()) {
-            netRepository = NetworkRepository.getInstance();
-            roomRepository = RoomRepository.getInstance(application);
             if (isFirstLoading) {
                 getNewSourceList();
             }else {

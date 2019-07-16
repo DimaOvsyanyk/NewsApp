@@ -6,8 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.dimaoprog.newsapiapp.databinding.ActivityMainBinding;
+import com.dimaoprog.newsapiapp.databinding.NavHeaderMainBinding;
 import com.dimaoprog.newsapiapp.utils.ChangeFragmentsListener;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
 import com.dimaoprog.newsapiapp.view.loginRegistration.LoginFragment;
 import com.dimaoprog.newsapiapp.view.news.NewsFragment;
 import com.dimaoprog.newsapiapp.view.profile.ProfileFragment;
@@ -18,44 +24,53 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ChangeFragmentsListener {
 
+    @Inject
+    ViewModelFactory vmFactory;
+
     private MainViewModel mainViewModel;
     private FirebaseAuth auth;
-    private DrawerLayout drawer;
+    private ActivityMainBinding binding;
+    private NavHeaderMainBinding bindingHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        bindingHeader = NavHeaderMainBinding.bind(binding.navView.getHeaderView(0));
+        NewsApp.getApp().getAppComponent().inject(this);
+        mainViewModel = ViewModelProviders.of(this, vmFactory).get(MainViewModel.class);
+        setUpNavigationViews();
 
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
 
-        if (savedInstanceState == null) {
-            if (currentUser != null) {
-                openFragment(NewsFragment.newInstance(this), false, false);
-                navigationView.setCheckedItem(R.id.nav_news);
-            } else {
-                openFragment(LoginFragment.newInstance(this), false, false);
-            }
+        if (currentUser != null) {
+            openFragment(NewsFragment.newInstance(this), false, false);
+        } else {
+            openFragment(LoginFragment.newInstance(this), false, false);
         }
+
+    }
+
+    private void setUpNavigationViews() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, binding.drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        binding.navView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -66,12 +81,15 @@ public class MainActivity extends AppCompatActivity
         }
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(R.id.fr_container, fragment);
         if (addToBackStack) {
             transaction.addToBackStack(null);
         }
         transaction.commit();
+        if (fragment.getClass().equals(NewsFragment.class)) {
+            binding.navView.setCheckedItem(R.id.nav_news);
+        }
     }
 
     public void clearBackStack() {
@@ -82,8 +100,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -91,9 +109,11 @@ public class MainActivity extends AppCompatActivity
 
     private void checkDrawerLockMode() {
         if (auth.getCurrentUser() != null) {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            auth.updateCurrentUser(auth.getCurrentUser());
+            bindingHeader.setUserName(auth.getCurrentUser().getDisplayName());
         } else {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
     }
 
@@ -112,7 +132,7 @@ public class MainActivity extends AppCompatActivity
             auth.signOut();
             openFragment(LoginFragment.newInstance(this), false, true);
         }
-        drawer.closeDrawer(GravityCompat.START);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }

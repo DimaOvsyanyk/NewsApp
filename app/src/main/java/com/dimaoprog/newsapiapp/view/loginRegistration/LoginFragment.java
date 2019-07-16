@@ -14,12 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.dimaoprog.newsapiapp.NewsApp;
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.LoginFragmentBinding;
 import com.dimaoprog.newsapiapp.utils.ChangeFragmentsListener;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
 import com.dimaoprog.newsapiapp.view.news.NewsFragment;
 
+import javax.inject.Inject;
+
 public class LoginFragment extends Fragment {
+
+    @Inject
+    ViewModelFactory vmFactory;
 
     private LoginViewModel lViewModel;
     private LoginFragmentBinding binding;
@@ -39,7 +46,8 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        lViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        NewsApp.getApp().getAppComponent().inject(this);
+        lViewModel = ViewModelProviders.of(this, vmFactory).get(LoginViewModel.class);
         binding = DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false);
         binding.setLoginModel(lViewModel);
         observeLiveData();
@@ -58,7 +66,7 @@ public class LoginFragment extends Fragment {
         lViewModel.getPasswordOk().observe(getViewLifecycleOwner(), ok -> binding.etPassword.setError(ok ? null : getString(R.string.invalid_pass)));
         lViewModel.getSignInCompleted().observe(getViewLifecycleOwner(), completed -> {
             if (completed) {
-                changeFrListener.openFragment(NewsFragment.newInstance(changeFrListener), true, true);
+                changeFrListener.openFragment(NewsFragment.newInstance(changeFrListener), false, true);
                 lViewModel.setSignInCompleted(false);
             }
         });

@@ -7,16 +7,19 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import javax.inject.Inject;
+
 import static com.dimaoprog.newsapiapp.utils.Constants.COLLECTION_NAME;
 import static com.dimaoprog.newsapiapp.utils.Constants.EMAIL_REG_EXP;
 
-public class LoginViewModel extends AndroidViewModel {
+public class LoginViewModel extends ViewModel {
 
     private String email = "";
     private String password = "";
@@ -31,10 +34,10 @@ public class LoginViewModel extends AndroidViewModel {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    public LoginViewModel(@NonNull Application application) {
-        super(application);
+    @Inject
+    public LoginViewModel(PrefsRepository prefsRepository) {
         auth = FirebaseAuth.getInstance();
-        prefsRepository = PrefsRepository.getInstance(application);
+        this.prefsRepository = prefsRepository;
         db = FirebaseFirestore.getInstance();
     }
 

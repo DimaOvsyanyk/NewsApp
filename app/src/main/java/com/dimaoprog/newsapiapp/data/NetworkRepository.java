@@ -1,9 +1,10 @@
 package com.dimaoprog.newsapiapp.data;
 
-import com.dimaoprog.newsapiapp.dagger.DaggerAppComponent;
 import com.dimaoprog.newsapiapp.models.NewsResponse;
 import com.dimaoprog.newsapiapp.models.SourcesResponse;
 import com.dimaoprog.newsapiapp.models.WeatherResponse;
+
+import javax.inject.Inject;
 
 import io.reactivex.Single;
 import retrofit2.Response;
@@ -12,17 +13,13 @@ import static com.dimaoprog.newsapiapp.utils.Constants.API_KEY_WEATHER;
 
 public class NetworkRepository {
 
-    private static INewsApi newsApi;
-    private static IWeatherApi weatherApi;
-    private static NetworkRepository instance;
+    private INewsApi newsApi;
+    private IWeatherApi weatherApi;
 
-    public static NetworkRepository getInstance() {
-        if (instance == null) {
-            instance = new NetworkRepository();
-            newsApi = DaggerAppComponent.create().getNewsApi();
-            weatherApi = DaggerAppComponent.create().getWeatherApi();
-        }
-        return instance;
+    @Inject
+    public NetworkRepository(INewsApi newsApi, IWeatherApi weatherApi) {
+        this.newsApi = newsApi;
+        this.weatherApi = weatherApi;
     }
 
     public Single<Response<WeatherResponse>> getWeather(String city, int days) {

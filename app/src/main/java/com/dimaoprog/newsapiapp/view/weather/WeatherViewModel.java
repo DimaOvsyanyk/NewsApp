@@ -8,6 +8,8 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import com.dimaoprog.newsapiapp.data.NetworkRepository;
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.models.CurrentWeather;
@@ -16,12 +18,14 @@ import com.dimaoprog.newsapiapp.models.Location;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
-public class WeatherViewModel extends AndroidViewModel {
+public class WeatherViewModel extends ViewModel {
 
     private PrefsRepository prefsRepository;
     private NetworkRepository netRepository;
@@ -31,10 +35,10 @@ public class WeatherViewModel extends AndroidViewModel {
     private ObservableField<Location> location = new ObservableField<>();
     private MutableLiveData<List<Forecastday>> forecastList = new MutableLiveData<>();
 
-    public WeatherViewModel(@NonNull Application application) {
-        super(application);
-        prefsRepository = PrefsRepository.getInstance(application);
-        netRepository = NetworkRepository.getInstance();
+    @Inject
+    public WeatherViewModel(PrefsRepository prefsRepository, NetworkRepository netRepository) {
+        this.prefsRepository = prefsRepository;
+        this.netRepository = netRepository;
         loadWeather();
     }
 

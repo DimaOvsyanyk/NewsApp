@@ -1,16 +1,13 @@
 package com.dimaoprog.newsapiapp.view.profile;
 
-import android.app.Application;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.dimaoprog.newsapiapp.data.PrefsRepository;
 import com.dimaoprog.newsapiapp.models.UserDetails;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,9 +16,11 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import javax.inject.Inject;
+
 import static com.dimaoprog.newsapiapp.utils.Constants.COLLECTION_NAME;
 
-public class ProfileViewModel extends AndroidViewModel {
+public class ProfileViewModel extends ViewModel {
 
     private String oldPassword = "";
     private String newPassword = "";
@@ -48,9 +47,9 @@ public class ProfileViewModel extends AndroidViewModel {
     private UserDetails currentUserDetails;
     private FirebaseFirestore db;
 
-    public ProfileViewModel(@NonNull Application application) {
-        super(application);
-        prefsRepository = PrefsRepository.getInstance(application);
+    @Inject
+    public ProfileViewModel(PrefsRepository prefsRepository) {
+        this.prefsRepository = prefsRepository;
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = auth.getCurrentUser();
@@ -65,10 +64,10 @@ public class ProfileViewModel extends AndroidViewModel {
             populateUserDetails();
             setProcessing(false);
         })
-        .addOnFailureListener(e -> {
-            setProcessing(false);
-            setToastMessage(e.getLocalizedMessage());
-        });
+                .addOnFailureListener(e -> {
+                    setProcessing(false);
+                    setToastMessage(e.getLocalizedMessage());
+                });
     }
 
     private void populateUserDetails() {
@@ -86,7 +85,7 @@ public class ProfileViewModel extends AndroidViewModel {
             return;
         }
         if (newPassword.length() > 1) {
-            if (!setNewPassOk()){
+            if (!setNewPassOk()) {
                 return;
             }
             setProcessing(true);
@@ -102,16 +101,12 @@ public class ProfileViewModel extends AndroidViewModel {
         AuthCredential credential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(credential)
                 .addOnSuccessListener(onSuccess1 -> currentUser.updatePassword(newPassword)
-                        .addOnSuccessListener(onSuccess2 -> {
-                            currentUser.updateProfile(getUserNameChangeReq())
-                                    .addOnFailureListener(e -> setToastMessage(e.getLocalizedMessage()));
-                            postNewDetails();
-                        })
-                        .addOnFailureListener(e ->{
+                        .addOnSuccessListener(onSuccess2 -> postNewDetails())
+                        .addOnFailureListener(e -> {
                             setProcessing(false);
                             setToastMessage(e.getLocalizedMessage());
                         }))
-                .addOnFailureListener(e ->{
+                .addOnFailureListener(e -> {
                     setProcessing(false);
                     setToastMessage(e.getLocalizedMessage());
                 });
@@ -120,6 +115,8 @@ public class ProfileViewModel extends AndroidViewModel {
     private void postNewDetails() {
         Log.d("firebase", "postNewDetails");
         setChangesToCurrentUserDetails();
+        currentUser.updateProfile(getUserNameChangeReq())
+                .addOnFailureListener(e -> setToastMessage(e.getLocalizedMessage()));
         db.collection(COLLECTION_NAME).document(auth.getCurrentUser().getUid())
                 .set(currentUserDetails.toMap())
                 .addOnSuccessListener(onSuccess -> {

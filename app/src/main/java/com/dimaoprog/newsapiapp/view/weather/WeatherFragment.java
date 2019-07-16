@@ -13,19 +13,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dimaoprog.newsapiapp.NewsApp;
 import com.dimaoprog.newsapiapp.R;
 import com.dimaoprog.newsapiapp.databinding.WeatherFragmentBinding;
+import com.dimaoprog.newsapiapp.utils.ViewModelFactory;
+
+import javax.inject.Inject;
 
 public class WeatherFragment extends Fragment {
 
-    private WeatherViewModel wViewModel;
-    private WeatherFragmentBinding binding;
+    @Inject
+    ViewModelFactory vmFactory;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        wViewModel = ViewModelProviders.of(this).get(WeatherViewModel.class);
-        binding = DataBindingUtil.inflate(inflater, R.layout.weather_fragment, container, false);
+        NewsApp.getApp().getAppComponent().inject(this);
+        WeatherViewModel wViewModel = ViewModelProviders.of(this, vmFactory).get(WeatherViewModel.class);
+        WeatherFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.weather_fragment, container, false);
         binding.setWeatherModel(wViewModel);
         WeatherAdapter adapter = new WeatherAdapter();
         binding.rvForecast.setAdapter(adapter);
